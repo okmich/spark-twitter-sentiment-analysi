@@ -1,0 +1,33 @@
+Sentiment Analysis is the process of determining whether a piece of writing is positive, negative or neutral. It's also known as opinion mining, deriving the opinion or attitude of a speaker. A common use case for this technology is to discover how people feel about a particular topic.
+https://www.lexalytics.com/technology/sentiment
+
+Note that sentiments are subjective and are more of impressions or feelings. They are not facts but could provide a clue to reality.
+
+
+
+Use case:
+1) Predict the success of a political/social campaign
+2) Decide whether to invest in a certain company
+3) Targeted advertizing
+4) Product and service review
+5) Research in sociology and psychology
+
+
+
+Trending topics can be used to create campaigns, attract larger audience, help in crisis management, service adjusting and target marketing
+
+Agenda
+========================
+Sentiment analysis
+Architecture of the system
+Spark Streaming
+Integration componenet
+Spark MlLib
+Dashboard
+
+
+
+
+
+
+

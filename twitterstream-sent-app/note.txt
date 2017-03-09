@@ -1,0 +1,53 @@
+//spark-shell --packages org.apache.spark:spark-streaming-twitter_2.10:1.6.0
+
+import org.apache.spark.rdd.RDD
+import org.apache.spark.streaming._
+import org.apache.spark.streaming.dstream.ReceiverInputDStream
+import org.apache.spark.streaming.api.java._
+import org.apache.spark.streaming.twitter.TwitterUtils
+
+import twitter4j.Status
+import twitter4j.conf._
+import twitter4j.auth.OAuthAuthorization
+
+
+val streamingCtxt = new StreamingContext(sc, Seconds(5))
+
+System.setProperty("twitter4j.oauth.consumerKey", "GRn40epjhYSrfmlSJH4rNemG8")
+System.setProperty("twitter4j.oauth.consumerSecret", "Dx8GxpCkkUvp9FoYcXNNkNNYiRmHQjSDgfxoTs4m4JBVDxr4q1")
+System.setProperty("twitter4j.oauth.accessToken", "1421823854-zyPjn7cHpMfbxJm2Pg8jzKKvouFdh7kqhHp0Dcw")
+System.setProperty("twitter4j.oauth.accessTokenSecret", "69XjGprH4mqg5DW7LfomX3cV1R0TjbeNxx4vDnw2N0ENN")
+
+
+val inputDStream : ReceiverInputDStream[twitter4j.Status] = TwitterUtils.createStream(streamingCtxt, None, Array("cnn"))
+
+//inputDStream.foreachRDD((rdd : RDD[twitter4j.Status]) => rdd.foreach(s => println(s.getText)))
+
+case class Tweet(id: Long, userId: Long, user: String, screenName: String, followerCount: Int, text: String, lang: String, isRt : Boolean, isSelfRt: Boolean, source: String, favCount: Int, country: String) extends java.io.Serializable {
+	override def toString = id.toString + "\t" + userId.toString + "\t" + user + "\t" + screenName + "\t" + followerCount + "\t" + text + "\t" + lang + "\t" + isRt.toString + "\t" + isSelfRt.toString + "\t" + source + "\t" + favCount.toString + "\t" + country
+}
+
+inputDStream.foreachRDD((rdd : RDD[twitter4j.Status]) => {
+	def mapTweet(status: twitter4j.Status) : Tweet = {
+		val user = status.getUser
+		val place = status.getPlace
+		Tweet(status.getId, 
+			if (user == null) 0L else user.getId,
+			if (user == null) "" else user.getName,
+			if (user == null) "" else user.getScreenName,
+			if (user == null) 0 else user.getFollowersCount,
+			status.getText,
+			status.getLang,
+			status.isRetweeted,
+			status.isRetweetedByMe,
+			status.getSource,
+			status.getFavoriteCount,
+			if (place == null) "" else place.getCountry
+			)
+	}
+
+	def isEnglishTweet(t: Tweet) = t.lang == "en"
+	rdd.map(mapTweet).filter(isEnglishTweet).map(_.toString).toDF.write.mode("append").text("hdfs://localhost:9000/user/datadev/output/streaming/twitter")
+})
+
+streamingCtxt.start
