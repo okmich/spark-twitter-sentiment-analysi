@@ -3,9 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.okmich.jfreechart.sample;
+package com.okmich.twitanalysis;
 
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.Executors;
@@ -31,13 +33,12 @@ import org.jfree.data.xy.XYDataset;
  *
  * @author ABME340
  */
-public class FirstChart extends javax.swing.JFrame implements ActionListener {
+public class Main extends javax.swing.JFrame implements ActionListener {
 
     /**
      * The time series data.
      */
-    private TimeSeries series1;
-    private TimeSeries series2;
+    private TimeSeries series1, series2, series3;
     private AtomicBoolean controlMonitor;
     private ScheduledExecutorService scheduledExecutorService;
 
@@ -50,7 +51,7 @@ public class FirstChart extends javax.swing.JFrame implements ActionListener {
     /**
      * Creates new form FirstChart
      */
-    public FirstChart() {
+    public Main() {
         this.controlMonitor = new AtomicBoolean(false);
         initComponents();
         this.scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
@@ -71,11 +72,11 @@ public class FirstChart extends javax.swing.JFrame implements ActionListener {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGap(0, 400, Short.MAX_VALUE)
+                        .addGap(0, 400, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGap(0, 300, Short.MAX_VALUE)
+                        .addGap(0, 300, Short.MAX_VALUE)
         );
         JPanel p = new JPanel(new BorderLayout()); //PREFERRED!
         setChartPanel(p);
@@ -100,8 +101,9 @@ public class FirstChart extends javax.swing.JFrame implements ActionListener {
                 }
             }
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FirstChart.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         //</editor-fold>
@@ -109,17 +111,26 @@ public class FirstChart extends javax.swing.JFrame implements ActionListener {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new FirstChart().setVisible(true);
+                new Main().setVisible(true);
             }
         });
     }
 
     private void setChartPanel(JPanel jpanel) {
-        this.series1 = new TimeSeries("Random Data", Millisecond.class);
-        this.series2 = new TimeSeries("Random Data2", Second.class);
+        this.series1 = new TimeSeries("Negative", Millisecond.class);
+        this.series2 = new TimeSeries("Positive", Millisecond.class);
+        this.series3 = new TimeSeries("Unknown", Millisecond.class);
         final TimeSeriesCollection dataset = new TimeSeriesCollection(this.series1);
         dataset.addSeries(this.series2);
+        dataset.addSeries(this.series3);
         final JFreeChart chart = createChart(dataset);
+        chart.getXYPlot().getRenderer(0).setSeriesPaint(0, Color.RED);
+        chart.getXYPlot().getRenderer(0).setSeriesStroke(0, new BasicStroke(1.0f));
+        chart.getXYPlot().getRenderer(0).setSeriesPaint(1, Color.BLUE);
+        chart.getXYPlot().getRenderer(0).setSeriesStroke(1, new BasicStroke(1.0f));
+        chart.getXYPlot().getRenderer(0).setSeriesPaint(2, Color.GRAY);
+        chart.getXYPlot().getRenderer(0).setSeriesStroke(2, new BasicStroke(1.0f));
+        chart.getPlot().setBackgroundPaint(Color.BLACK);
 
         final ChartPanel chartPanel = new ChartPanel(chart);
         final JButton button = new JButton("Add New Data Item");
@@ -142,9 +153,9 @@ public class FirstChart extends javax.swing.JFrame implements ActionListener {
      */
     private JFreeChart createChart(final XYDataset dataset) {
         final JFreeChart result = ChartFactory.createTimeSeriesChart(
-                "Dynamic Data",
+                "Twitter Sentiments Analysis",
                 "Time",
-                "Value",
+                "Sentiment score",
                 dataset,
                 true,
                 true,
@@ -164,9 +175,10 @@ public class FirstChart extends javax.swing.JFrame implements ActionListener {
         this.lastValue = this.lastValue * factor;
         this.lastValue2 = this.lastValue2 * (0.90 + 0.2 * Math.random());
         series1.add(new Millisecond(), this.lastValue);
-        series2.add(new Second(), lastValue2);
+        series2.add(new Millisecond(), lastValue2);
+        series3.add(new Millisecond(), lastValue2 + (Math.random() + 20));
     }
-    
+
     @Override
     public void actionPerformed(ActionEvent ae) {
         scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
@@ -175,8 +187,6 @@ public class FirstChart extends javax.swing.JFrame implements ActionListener {
                 addSeries();
             }
         }, 1, 1, TimeUnit.SECONDS);
-        
-      
-    }
 
+    }
 }

@@ -4,3 +4,4 @@ scalaVersion := "2.10.5"
 
 libraryDependencies += "org.apache.spark" %% "spark-streaming" % "1.6.0"
 libraryDependencies += "org.apache.spark" % "spark-streaming-twitter_2.10" % "1.6.0"
+libraryDependencies += "redis.clients" % "jedis" % "2.9.0"
