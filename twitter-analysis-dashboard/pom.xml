@@ -50,7 +50,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <minimizeJar>true</minimizeJar>
+                            <minimizeJar>false</minimizeJar>
                             <transformers>
                                 <!-- add Main-Class to manifest file -->
                                 <transformer
