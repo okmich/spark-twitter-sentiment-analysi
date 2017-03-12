@@ -1,4 +1,6 @@
-//spark-shell --packages org.apache.spark:spark-streaming-twitter_2.10:1.6.0
+//spark-shell --packages org.apache.spark:spark-streaming-twitter_2.10:1.6.0,edu.stanford.nlp:stanford-corenlp:3.5.2
+
+//spark-submit --packages org.apache.spark:spark-streaming-twitter_2.10:1.6.0,edu.stanford.nlp:stanford-corenlp:3.5.2,redis.clients:jedis:2.9.0 --jars ../stanford-corenlp-3.5.2-models.jar --class Main target/scala-2.10/twitter-streaming-and-sentiment-analysis-app_2.10-1.0.jar cnn
 
 import org.apache.spark.rdd.RDD
 import org.apache.spark.streaming._
